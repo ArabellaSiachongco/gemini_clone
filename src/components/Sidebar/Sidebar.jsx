@@ -1,29 +1,37 @@
-import React, { useState } from 'react'
+import React, { useContext, useState } from 'react'
 import './Sidebar.css'
 import { assets } from '../../assets/assets.js'
+import { Context } from '../../context/Context.jsx'
 const Sidebar = () => {
 
     const [extended, setExtended] = useState(false)
+    const { onSent, prevPrompts, setRecentPrompt, newChat } = useContext(Context)
 
+    const loadPrompt = async (prompt) => {
+        setRecentPrompt(prompt)
+        await onSent(prompt)
+    }
 
     return (
         <div className='sidebar'>
             <div className='top'>
-                <img onClick={()=>setExtended(prev=>!prev)} src={assets.menu_icon} className='menu' alt='menu_icon' />
-                <div className="new-chat">
+                <img onClick={() => setExtended(prev => !prev)} src={assets.menu_icon} className='menu' alt='menu_icon' />
+                <div onClick={() => newChat()} className="new-chat">
                     <img src={assets.plus_icon} alt="plus_icon" />
                     {extended ? <p>New chat</p> : null}
                 </div>
-                {extended ?
+                {extended ? (
                     <div className="recent">
                         <p className="recent-title">Recent</p>
-                        <div className="recent-entry">
-                            <img src={assets.message_icon} alt="message_icon" />
-                            <p>What is react ..</p>
-                        </div>
+                        {prevPrompts?.map((item, index) => (
+                            <div key={index} onClick={() => loadPrompt(item)} className="recent-entry">
+                                <img src={assets.message_icon} alt="message_icon" />
+                                <p>{item.substring(0, 18)}...</p>
+                            </div>
+                        ))}
                     </div>
-                    : null
-                }
+                ) : null}
+
             </div>
             <div className='bottom'>
                 <div className="bottom-item recent-entry">
